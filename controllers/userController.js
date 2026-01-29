@@ -11,20 +11,24 @@ const register = async (req, res) => {
         message: "Provide Proper Data for Registration",
       });
     }
-    const checkEmail = await userModel.findOne({ email:inputData.email})
-    const checkMobile = await userModel.findOne({ mobile_number:inputData.mobile_number})
-    const checkAadhar = await userModel.findOne({ aadhar_number:inputData.aadhar_number})
-
-
-    if(checkEmail || checkMobile || checkAadhar) {
-      return res.json({
-      status_code: 404,
-      message: "User Exists Already",
+    const checkData = await userModel.findOne({
+      $or: [
+        { email: inputData.email },
+        { mobile_number: inputData.mobile_number },
+        { aadhar_number: inputData.aadhar_number },
+      ],
     });
+
+    console.log(checkData);
+    if (checkData) {
+      return res.json({
+        status_code: 404,
+        message: "User Exists Already",
+      });
     }
 
-    // console.log(inputData);
-    const storeDb = await userModel.create(inputData)
+    const storeDb = await userModel.create(inputData);
+    console.log(storeDb);
     return res.json({
       status_code: 200,
       message: "Registered Successfully",
@@ -39,10 +43,68 @@ const register = async (req, res) => {
   }
 };
 
-const login = () => {};
+const login = async (req, res) => {
+  try {
+    const inputData = req.body;
+    if (Object.keys(inputData).length === 0) {
+      return res.status(404).json({ message: "Provide Data to Login" });
+    }
+    const checkData = await userModel.findOne({ email: inputData.email });
+    if (!checkData) {
+      return res.status(404).json({ message: "Account Does not Exists" });
+    }
 
-const updateUser = () => {};
+    if (checkData.password === inputData.password) {
+      return res.status(200).json({ message: "Logged In Successfully" });
+    } else {
+      return res.status(404).json({ message: "Invalid Credentials" });
+    }
+  } catch (err) {
+    return res.json({
+      status_code: 404,
+      message: "Registered Unsuccessfull",
+    });
+  }
+};
 
-const deleteUser = () => {};
+const updateUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (Object.keys(req.body).length === 0) {
+      return res.status(404).json({ message: "Provide Data to Login" });
+    }
+
+    const updateUser = await userModel.findByIdAndUpdate(id, req.body, {new:true, runValidators:true})
+          return res.status(200).json({ message: "Updated Successfully", data:updateUser });
+  } catch (err) {
+    return res.json({
+      status_code: 404,
+      message: "Registered Unsuccessfull",
+    });
+  }
+};
+
+const deleteUser = async (req,res) => {
+  try {
+    const id = req.params.id
+    const deleteUser = await userModel.findByIdAndDelete(id)
+    if(deleteUser) {
+      return res.json({
+      status_code: 200,
+      message: "Deleted successfully",
+    });
+    } else {
+      return res.json({
+      status_code: 404,
+      message: "User Not Found",
+    });
+    }
+  }catch (err) {
+    return res.json({
+      status_code: 404,
+      message: "Registered Unsuccessfull",
+    });
+  }
+};
 
 module.exports = { register, login, updateUser, deleteUser };

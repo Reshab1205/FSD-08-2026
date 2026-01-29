@@ -17,6 +17,6 @@ const userSchema = new mongoose.Schema({
         nation:{type:String, default:"Bharat"},
     },
     isActive:{type:String, enum:["Active", "InActive", "Banned"]}
-})
+}, {timestamps:true})
 
 module.exports = mongoose.model("user", userSchema)
