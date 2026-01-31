@@ -1,5 +1,17 @@
 const express = require("express");
 const userModel = require("../models/userModel");
+const { configDotenv } = require("dotenv");
+
+
+
+const userService = require('../services/userService')
+const generateToken = require('../utility/createToken');
+const { generateOTP } = require("../utility/generateOTP");
+
+
+configDotenv()
+
+
 
 const register = async (req, res) => {
   try {
@@ -11,13 +23,7 @@ const register = async (req, res) => {
         message: "Provide Proper Data for Registration",
       });
     }
-    const checkData = await userModel.findOne({
-      $or: [
-        { email: inputData.email },
-        { mobile_number: inputData.mobile_number },
-        { aadhar_number: inputData.aadhar_number },
-      ],
-    });
+    const checkData = await userService.findUser({email:inputData.email,mobile:inputData.mobile_number, aadhar:inputData.aadhar_number});
 
     console.log(checkData);
     if (checkData) {
@@ -53,19 +59,44 @@ const login = async (req, res) => {
     if (!checkData) {
       return res.status(404).json({ message: "Account Does not Exists" });
     }
-
+    
     if (checkData.password === inputData.password) {
-      return res.status(200).json({ message: "Logged In Successfully" });
+      const token = generateToken.generateToken(checkData.email, checkData._id)
+      console.log('token', token)
+      return res.status(200).json({ message: "Logged In Successfully", token: token });
     } else {
       return res.status(404).json({ message: "Invalid Credentials" });
     }
   } catch (err) {
     return res.json({
       status_code: 404,
-      message: "Registered Unsuccessfull",
+      message: "Internal Server Error",
     });
   }
-};
+}
+
+const loginWithOtp = async (req,res) => {
+  try {
+    const inputData = req.body;
+    if (Object.keys(inputData).length === 0) {
+      return res.status(404).json({ message: "Provide Data to Login" });
+    }
+
+const checkData = await userModel.findOne({ mobile_number: inputData.mobile_number });
+    if (!checkData) {
+      return res.status(404).json({ message: "Account Does not Exists" });
+    } 
+    const otp = generateOTP()
+    console.log(otp)
+    return res.status(200).json({ message: "OTP sent", data:otp });
+    
+   } catch(err) {
+    return res.json({
+      status_code: 404,
+      message: "Internal Server Error",
+    });
+  }
+}
 
 const updateUser = async (req, res) => {
   try {
@@ -107,4 +138,4 @@ const deleteUser = async (req,res) => {
   }
 };
 
-module.exports = { register, login, updateUser, deleteUser };
+module.exports = { register, login, updateUser, deleteUser,loginWithOtp };
