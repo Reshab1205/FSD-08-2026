@@ -5,14 +5,17 @@ const app = express()
 
 
 const userRouter = require('./routes/userRoutes')
+const productRouter = require('./routes/productRoutes')
 
 
 app.use(express.json())
 connectDb()
 
-//routes
+// user routes
 app.use('/user', userRouter)
 
+// product routes
+app.use('/product', productRouter)
 
 app.listen(PORT, () => {
     console.log(`Server started on ${PORT}`)
