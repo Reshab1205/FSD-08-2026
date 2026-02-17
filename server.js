@@ -6,6 +6,7 @@ const app = express()
 
 const userRouter = require('./routes/userRoutes')
 const productRouter = require('./routes/productRoutes')
+const sellerRouter = require('./routes/sellerRoutes')
 
 
 app.use(express.json())
@@ -16,6 +17,9 @@ app.use('/user', userRouter)
 
 // product routes
 app.use('/product', productRouter)
+
+//seller routes
+app.use('/seller', sellerRouter)
 
 app.listen(PORT, () => {
     console.log(`Server started on ${PORT}`)

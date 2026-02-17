@@ -16,6 +16,7 @@ router.post('/login-with-otp', userController.loginWithOtp)
 router.post('/update/:id', userController.updateUser)
 router.post('/delete/:id', userController.deleteUser)
 router.post('/upload', handleUpload.single("file"), userController.uploadPDf)
+router.post('/send-mail', userController.sendMail)
 
 
 

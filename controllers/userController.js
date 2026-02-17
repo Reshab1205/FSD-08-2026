@@ -13,7 +13,6 @@ configDotenv();
 const register = async (req, res) => {
   try {
     let inputData = req.body;
-    console.log(inputData);
     if (Object.keys(inputData).length === 0) {
       return res.json({
         status_code: 404,
@@ -63,6 +62,7 @@ const login = async (req, res) => {
     if (Object.keys(inputData).length === 0) {
       return res.status(404).json({ message: "Provide Data to Login" });
     }
+    
     const checkData = await userModel.findOne({ email: inputData.email });
     if (!checkData) {
       return res.status(404).json({ message: "Account Does not Exists" });
@@ -177,6 +177,32 @@ const uploadPDf = async (req, res) => {
   }
 };
 
+const nodemailer = require('nodemailer')
+
+
+const sendMail = async(req,res) => {
+
+  const inputData = req.body
+  const mail = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {user: process.env.user, pass: process.env.pass }
+  })
+  mail.sendMail({
+    from: process.env.user,
+    to: inputData.email,
+    subject: 'Test Mail',
+    html: 'Testing My Email'
+  }, (err) => {
+    if (err) throw err;
+    return true
+  })
+ return res.json({
+        status_code: 200,
+        message: "Email sent successfully",
+      });}
+
 module.exports = {
   register,
   login,
@@ -184,4 +210,5 @@ module.exports = {
   deleteUser,
   loginWithOtp,
   uploadPDf,
+  sendMail
 };

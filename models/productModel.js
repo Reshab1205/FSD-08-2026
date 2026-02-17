@@ -17,7 +17,7 @@ const productSchema = new mongoose.Schema({
     product_discount: {type:Number},
     product_discount_price: {type:Number},
     product_brand_name: {type:String},
-    product_sellers: [{type:mongoose.Schema.Types.ObjectId, ref:'seller'}],
+    product_sellers: {type:mongoose.Schema.Types.ObjectId, ref:'seller'},
     product_description: {type:String},
     product_mfg_date: {type:Date},
     product_expiry_date: {type:Date},
