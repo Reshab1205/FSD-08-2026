@@ -12,19 +12,56 @@ const findSeller = async ({email, mobile,aadhar}) => {
     })
 }
 
-const getAllProducts = async (id) => {
+const getAllProductsWithSellerDetails = async(id) => {
     const products = await productModel.aggregate([
         {
             $match:{product_sellers: new mongoose.Types.ObjectId(id)}
         },
         {
             $lookup: {
-                from:'sellers',
-                localField:'product_sellers',
-                foreignField: '_id',
-                as:'sellerDetails'
+                from: 'sellers',
+                let: { sellerId: '$product_sellers' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ['$_id', '$$sellerId'] }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            first_name: 1,
+                            last_name: 1
+                        }
+                    }
+                ],
+                as: 'sellerDetails'
             }
         }
+    ])
+        return products
+}
+
+const getAllProducts = async (id) => {
+    const products = await productModel.aggregate([
+        {
+            $match:{product_sellers: new mongoose.Types.ObjectId(id)}
+        },
+        
+        // {
+        //     $lookup: {
+        //         from:'sellers',
+        //         localField:'product_sellers',
+        //         foreignField: '_id',
+        //         as:'sellerDetails'
+        //     }
+        // }
+        // {
+        //     $project: {
+        //         _id:0,
+        //         product_name:1,
+        //     }
+        // }
     ])
     console.log(products)
     return products
@@ -32,4 +69,4 @@ const getAllProducts = async (id) => {
 
 
 
-module.exports = {findSeller, getAllProducts}
+module.exports = {findSeller, getAllProducts, getAllProductsWithSellerDetails}

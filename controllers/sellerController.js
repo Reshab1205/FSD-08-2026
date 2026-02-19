@@ -66,6 +66,23 @@ const getAllProductsOfASeller = async (req,res) => {
     }
 }
 
+const getProductsWithSellerDetails = async (req,res) => {
+   try {
+        const id = req.params.id
+        console.log('id', id)
+        const getData = await sellerService.getAllProductsWithSellerDetails(id)
+        console.log('getData', getData)
+        res.send(getData)
+
+    } catch(err) {
+        console.log(err);
+        return res.json({
+          status_code: 404,
+          message: "Internal Server Error",
+        });
+    }
+}
+
 const sellerLogin = async (req,res) => {
     try {
 
@@ -111,4 +128,4 @@ const getSellerById = async (req,res) => {
 
 }
 
-module.exports = {createSeller,getAllProductsOfASeller, sellerLogin, updateSeller, deleteSeller, getAllSellers, getSellerById}
+module.exports = {createSeller,getAllProductsOfASeller, sellerLogin, updateSeller, deleteSeller, getAllSellers, getSellerById, getProductsWithSellerDetails}
