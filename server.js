@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const connectDb = require('./middlewares/dB')
 let PORT = 3000
 const app = express()
@@ -8,7 +9,7 @@ const userRouter = require('./routes/userRoutes')
 const productRouter = require('./routes/productRoutes')
 const sellerRouter = require('./routes/sellerRoutes')
 
-
+app.use(cors())
 app.use(express.json())
 connectDb()
 

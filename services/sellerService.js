@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const sellerModel = require('../models/sellerModel')
 const productModel = require('../models/productModel')
+const { pipeline } = require('nodemailer/lib/xoauth2')
 
 const findSeller = async ({email, mobile,aadhar}) => {
     await sellerModel.findOne({

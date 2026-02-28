@@ -6,11 +6,11 @@ configDotenv()
 
 const secret_key = process.env.JWT_SECRET_KEY
 
-const generateToken = (email, id) => {
-    console.log('hiii', email,id)
+const generateToken = (email, role) => {
+    console.log('hiii', email,role)
    return jwt.sign({
         email:email,
-        id: id
+        role: role
     }, secret_key, {expiresIn: "30d"})
 }
 

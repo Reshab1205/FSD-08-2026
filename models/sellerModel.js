@@ -25,6 +25,7 @@ const sellerSchema = new mongoose.Schema({
     email: {type:String, unique:true, required:true },
     mobile_number: {type:Number,unique:true, required:true },
     password: {type:String },
+    role:{type:String, enum:['admin', 'seller']},
     address: [addressSchema],
     aadhar_number:{type:Number, unique:true, required:true },
     my_orders: [{type:mongoose.Schema.Types.ObjectId, ref:'order'}],

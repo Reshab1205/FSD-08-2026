@@ -64,19 +64,24 @@ const login = async (req, res) => {
     }
     
     const checkData = await userModel.findOne({ email: inputData.email });
+    console.log(checkData)
     if (!checkData) {
       return res.status(404).json({ message: "Account Does not Exists" });
     }
+    const isMatch = await bcrypt.compare(
+      inputData.password,        
+      checkData.password         
+    );
 
-    if (checkData.password === inputData.password) {
-      const token = generateToken.generateToken(checkData.email, checkData._id);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid Credentials" });
+    }
+      const token = generateToken.generateToken(checkData.email, checkData.role);
       console.log("token", token);
       return res
         .status(200)
         .json({ message: "Logged In Successfully", token: token });
-    } else {
-      return res.status(404).json({ message: "Invalid Credentials" });
-    }
+    
   } catch (err) {
     return res.json({
       status_code: 404,
@@ -203,6 +208,18 @@ const sendMail = async(req,res) => {
         message: "Email sent successfully",
       });}
 
+const getUsers = async (req,res) => {
+  try {
+    const users = await userModel.find()
+    return res.status(200).json({message: 'Users list', data:users})
+  } catch (err) {
+    return res.json({
+      status_code: 404,
+      message: "Internal Server Error",
+    });
+  }
+}
+
 module.exports = {
   register,
   login,
@@ -210,5 +227,5 @@ module.exports = {
   deleteUser,
   loginWithOtp,
   uploadPDf,
-  sendMail
+  sendMail,getUsers
 };

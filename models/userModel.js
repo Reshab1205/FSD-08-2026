@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
         pincode:{type:Number},
         nation:{type:String, default:"Bharat"},
     },
+    role:{type:String, enum:["Admin", "User", "Seller"]},
     isActive:{type:String, enum:["Active", "InActive", "Banned"]}
 }, {timestamps:true})
 
